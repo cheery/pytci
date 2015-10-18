@@ -11,7 +11,7 @@ def chop(stream):
         # appears in the beginning of a "logical" line
         if stream.character == '#':
             return token(stream.position, "macro", stream.get_next())
-    if stream.character is "":
+    if stream.character == "":
         return None
     position = stream.position
     # Identifier: any sequence of letters, digits, or underscores,
@@ -58,7 +58,7 @@ def chop(stream):
             number += character
             if character + stream.character in exponents:
                 number += stream.get_next()
-        return token(stream.position, "number", number)
+        return token(position, "number", number)
     if character in punctuators:
         punc = character
         pair = punc + stream.character
@@ -67,8 +67,8 @@ def chop(stream):
             pair = punc + stream.character
         if pair in digraphs:
             punc = digraphs[punc + stream.get_next()]
-        return token(stream.position, "punctuation", punc)
-    return token(stream.position, "other", stream.get_next())
+        return token(position, "punctuation", punc)
+    return token(position, "other", character)
 
 def escape_sequence(stream):
     if stream.character in escape_sequences:
@@ -83,7 +83,7 @@ def escape_sequence(stream):
     #\nnn The character whose numerical value is given by nnn interpreted as an octal number
     if string in "01234567":
         string += get_octal(stream) + get_octal(stream)
-        if len(code) == 3:
+        if len(string) == 3:
             return chr(int(string, 8))
     return "\\" + string
 
@@ -107,7 +107,7 @@ exponents = set(["e+", "e-", "E+", "E-", "p+", "p-", "P+", "P-"])
 punctuators = set([
     "!", "#", "$", "%", "&", "(", ")", "*", "+", 
     ",", "-", ".", "/", ":", ";", "<", "=", ">", "?", "[", 
-    "\\", "]", "^", "_", "{", "\xc2", "}", "~",
+    "\\", "]", "^", "_", "{", "|", "}", "~",
 ])
 
 long_punctuators = set([

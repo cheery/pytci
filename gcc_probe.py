@@ -3,7 +3,7 @@
 
     Not called by rest of the pytci, due to extraneous dependencies not elsewhere.
 """
-import subprocess, re, tempfile
+import subprocess, re, tempfile, json
 
 def main():
     import sys
@@ -13,11 +13,13 @@ def main():
     interpreter = probe_program_interpreter(compiler)
     search_paths = probe_search_paths(compiler)
     inc_local, inc_global = probe_includes(compiler)
-    print "search paths:", search_paths
-    print "\"...\" includes:", inc_local
-    print "<...> includes:", inc_global
-    print "program interpreter:", interpreter
 
+    print json.dumps({
+        "search_paths": search_paths,
+        "local_includes": inc_local,
+        "includes": inc_global,
+        "interpreter": interpreter
+    }, sort_keys=True, indent=4)
 
 def probe_search_paths(compiler):
     proc = subprocess.Popen(compiler + ['-Xlinker', '--verbose'],

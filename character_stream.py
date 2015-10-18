@@ -24,6 +24,10 @@ class CharacterStream(object):
         while self.character in spaces:
             self.get_next()
 
+    def skip_spaces_and_newlines(self):
+        while self.character in spaces_and_newlines:
+            self.get_next()
+
     @property
     def position(self):
         return self.line, self.filename
@@ -82,4 +86,5 @@ def pull(generator):
     except StopIteration as stop:
         return ""
 
-spaces = ('\x00', ' ', '\t')
+spaces = ('\x00', ' ', '\t', '\r')
+spaces_and_newlines = ('\x00', ' ', '\t', '\r', '\n')
