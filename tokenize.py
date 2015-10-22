@@ -127,7 +127,7 @@ def chop_chop(stream):
 if __name__=='__main__':
     from character_stream import CharacterStream
     import trigraphs
-    test = "What ??=will c0me ??/\n0ut of/***sho*sho**/this line?//lollipops?"
+    test = "#What ??=will c0me ??/\n0ut of/***sho*sho**/this line?//lollipops?"
     stream = CharacterStream(trigraphs.translate(test))
     for token_ in chop_chop(stream):
         print token_

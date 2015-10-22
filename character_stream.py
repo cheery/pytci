@@ -9,7 +9,9 @@ class CharacterStream(object):
         self.generator = discard_comments(self, logical_characters(self, generator))
         self.line = line
         self.filename = filename
-        self.character = pull(self.generator)
+        self.character = '\n' # Marks beginning of new line
+                              # Doesn't go through line incrementing, so
+                              # it is sufficient for denoting beginning of the first line.
 
     def get_next(self):
         assert self.character != "", "error in tokenizing"

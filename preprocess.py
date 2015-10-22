@@ -572,8 +572,12 @@ if __name__=='__main__':
         return (line1, file1)
 
     def main():
+        import sys
         env = {}
-        filename = "/usr/include/stdio.h"
+        if len(sys.argv) < 2:
+            filename = "/usr/include/stdio.h"
+        else:
+            filename = sys.argv[1]
         with open(filename, 'r') as fd:
             contents = fd.read()
         stream = CharacterStream(trigraphs.translate(contents), 1, filename)
@@ -585,7 +589,13 @@ if __name__=='__main__':
             for token in chomp(state):
                 if position_of(token) != position:
                     position = advance_position(position, position_of(token))
-                sys.stdout.write(value_of(token) + ' ')
+                # Token generation. This is still wrong
+                if name_of(token) == 'string': 
+                    sys.stdout.write('"' + value_of(token) + '" ')
+                elif name_of(token) == 'char':
+                    sys.stdout.write("'" + value_of(token) + "' ")
+                else:
+                    sys.stdout.write(value_of(token) + ' ')
             sys.stdout.write('\n')
         except AssertionError as ass:
             traceback.print_exc()
