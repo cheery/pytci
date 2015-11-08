@@ -6,26 +6,45 @@
     it is put before the character stream.
 """
 
-trigraphs = { "=":"#", "/":"\\", "(":"[", ")":"]", "!":"|", "<":"{", ">":"}", "-":"~" }
+trigraphs = {
+    "=": "#",
+    "/": "\\",
+    "(": "[",
+    ")": "]",
+    "!": "|",
+    "<": "{",
+    ">": "}",
+    "-": "~",
+}
 
 def translate(sequence):
     k = 0
     for ch in sequence:
-        if ch == '?' and k < 2:
-            k += 1
-        elif ch == '?':
-            yield '?'
-        elif k == 2 and ch in trigraphs:
-            yield trigraphs[ch]
-            k = 0
-        else:
-            for _ in range(k):
+        if k == 0:
+            if ch != '?':
+                yield ch
+            else:
+                k = 1
+            continue
+        elif k == 1:
+            if ch != '?':
                 yield '?'
-            yield ch
+                yield ch
+                k = 0
+            else:
+                k = 2
+            continue
+        else:
             k = 0
-    for _ in range(k):
+            if ch in trigraphs:
+                yield trigraphs[ch]
+                continue
+            yield '?'
+            yield '?'
+            yield ch
+    for _ in xrange(k):
         yield '?'
 
-if __name__=='__main__':
+if __name__ == '__main__':
     test = "// Will the next line be executed????????????????/\na++;\n/??/\n* A comment *??/\n/"
     print ''.join(translate(test))

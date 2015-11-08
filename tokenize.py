@@ -11,7 +11,7 @@ def chop(stream):
         # appears in the beginning of a "logical" line
         if stream.character == '#':
             return token(stream.position, "macro", stream.get_next())
-    if stream.character == "":
+    if not stream.character:
         return None
     position = stream.position
     # Identifier: any sequence of letters, digits, or underscores,
@@ -29,7 +29,7 @@ def chop(stream):
         terminal = stream.get_next()
         string = ""
         while stream.character != terminal:
-            assert stream.character != "",   "unterminated string"
+            assert stream.character, "unterminated string"
             assert stream.character != "\n", "unterminated string"
             character = stream.get_next()
             if character == '\\':
@@ -53,7 +53,7 @@ def chop(stream):
     character = stream.get_next()
     if character.isdigit() or character == "." and stream.character.isdigit():
         number = character
-        while stream.character.isalnum() or stream.character in ('.', '_'):
+        while stream.character.isalnum() or stream.character in ('._'):
             character = stream.get_next()
             number += character
             if character + stream.character in exponents:
@@ -81,24 +81,31 @@ def escape_sequence(stream):
             return chr(int(code, 16))
         return "\\" + string + code
     #\nnn The character whose numerical value is given by nnn interpreted as an octal number
-    if string in "01234567":
+    if is_octal_char(string):
         string += get_octal(stream) + get_octal(stream)
         if len(string) == 3:
             return chr(int(string, 8))
     return "\\" + string
 
 def get_hex(stream):
-    if stream.character in "0123456789ABCDEFabcdef":
+    if stream.character in hex_alphabet:
         return stream.get_next()
     return ""
 
 def get_octal(stream):
-    if stream.character in "01234567":
+    if is_octal_char(stream.character):
         return stream.get_next()
     return ""
 
+def is_octal_char(character):
+    return character in octal_alphabet
+
 def token(position, name, value=""):
     return position, name, value
+
+hex_alphabet = set("0123456789ABCDEFabcdef")
+
+octal_alphabet = set("01234567")
 
 escape_sequences = {"a": 0x07, "b": 0x08, "f": 0x0C, "n": 0x0A, "r": 0x0D, "t": 0x09, "v": 0x0B, "\\": 0x5C, "'": 0x27, "\"": 0x22, "?": 0x3F}
 

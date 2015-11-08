@@ -14,7 +14,7 @@ class CharacterStream(object):
                               # it is sufficient for denoting beginning of the first line.
 
     def get_next(self):
-        assert self.character != "", "error in tokenizing"
+        assert self.character, "error in tokenizing"
         character = self.character
         self.character = pull(self.generator)
         return character
@@ -37,18 +37,21 @@ class CharacterStream(object):
 def logical_characters(stream, sequence):
     backslash = False
     for ch in sequence:
-        if ch == "\\":
-            backslash = True
-        elif backslash and ch == "\n":
+        if backslash:
             backslash = False
-            stream.line += 1
-        else:
-            if backslash:
-                yield "\\"
-                backslash = False
+            if ch == "\n":
+                stream.line += 1
+                continue
+            yield "\\"
+            if ch != "\\":
+                yield ch
+            continue
+        elif ch != "\\":
             if ch == "\n":
                 stream.line += 1
             yield ch
+        else:
+            backslash = True
     if backslash:
         yield "\\"
 
@@ -57,7 +60,9 @@ def discard_comments(stream, sequence):
     state = 0
     for ch in sequence:
         if state == 0:
-            if ch == '/' and stream.comments:
+            if ch != '/':
+                yield ch
+            elif stream.comments:
                 state = 1
             else:
                 yield ch
@@ -88,5 +93,6 @@ def pull(generator):
     except StopIteration as stop:
         return ""
 
-spaces = ('\x00', ' ', '\t', '\r')
-spaces_and_newlines = ('\x00', ' ', '\t', '\r', '\n')
+
+spaces = set(['\x00', ' ', '\t', '\r'])
+spaces_and_newlines = set(['\x00', ' ', '\t', '\r', '\n'])

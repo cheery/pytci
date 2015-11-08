@@ -599,6 +599,6 @@ if __name__=='__main__':
             sys.stdout.write('\n')
         except AssertionError as ass:
             traceback.print_exc()
-            for x in range(5):
+            for x in xrange(5):
                 print tokenize.chop(stream)
     main()
