@@ -2,6 +2,9 @@
     The preprocessor tokenizer, imitating the behavior of a popular C compiler.
 """
 
+# Bugs noticed in this code when translating it to lever/lib/c.lc:
+# The double digraph %:%: is not handled correctly.
+# The %: is not recognized as a macro character in beginning of line.
 def chop(stream):
     stream.skip_spaces()
     while stream.character == '\n':
