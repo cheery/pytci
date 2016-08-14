@@ -39,9 +39,13 @@ def translate(sequence):
             if ch in trigraphs:
                 yield trigraphs[ch]
                 continue
-            yield '?'
-            yield '?'
-            yield ch
+            elif ch == '?':
+                k = 2
+                yield '?'
+            else:
+                yield '?'
+                yield '?'
+                yield ch
     for _ in xrange(k):
         yield '?'
 
